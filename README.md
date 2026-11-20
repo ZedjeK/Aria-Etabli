@@ -52,6 +52,25 @@ jamais deviné. `--tenseurs` ajoute la liste de tous les tenseurs, `--json` chan
 Le fichier n'est ouvert qu'en lecture et la commande n'écrit rien. Lancée depuis l'exe, elle laisse seulement celui-ci
 créer son dossier d'extraction `cache\` dans ton dossier de données, comme à chaque lancement.
 
+### Mesurer la vitesse d'un modèle
+
+Il faut un moteur llama.cpp : le dossier qui contient `llama-bench` (Etabli n'en embarque pas encore).
+
+```powershell
+python -m appli mesurer bench C:\modeles\mon-modele.gguf --moteur C:\llama.cpp
+python -m appli mesurer bench C:\modeles\mon-modele.gguf --moteur C:\llama.cpp --ngl 20 --profondeur 4096 --json
+```
+
+`llama-bench` mesure la lecture du prompt (`pp`) et la génération (`tg`) en jetons par seconde, avec l'écart-type et tous
+les échantillons. La commande y ajoute la **configuration complète** : le modèle (architecture, quantification, types de
+tenseurs), le moteur (build, commit, backends), le matériel et tous les réglages que le moteur déclare. Deux mesures ne
+se comparent que si cette configuration est la même, à la variable qu'on fait varier près : la fonction
+`verifier_comparables` de `appli/mesures.py` fait cette vérification, mais la commande `mesurer` ne compare rien
+elle-même. `python -m appli mesurer --aide` donne toutes les options.
+
+Rien n'est enregistré par la commande : elle affiche son résultat, et `--sortie fichier.json` l'écrit aussi dans un
+fichier, sans jamais écraser un fichier existant.
+
 ## Où sont tes données
 
 Tout est dans `%USERPROFILE%\.Aria-Etabli` :
@@ -97,6 +116,15 @@ Inspecteur GGUF :
   `inconnu(N)`, et sa taille, déduite des décalages, est marquée d'un tilde (`~`) : elle est exacte à l'alignement près ;
 - l'exe n'a pas de console : lance la commande depuis les sources, ou depuis l'exe en redirigeant la sortie vers un
   fichier (`Aria-Etabli.exe inspecter modele.gguf > resume.txt`).
+
+Mesure de vitesse :
+
+- `llama-bench` ne sait pas régler le nombre d'experts actifs d'un modèle MoE : cette commande ne le fait pas non plus ;
+- le moteur est à fournir avec `--moteur` : Etabli ne lit pas les dossiers des autres applis et n'embarque pas encore de moteur ;
+- un modèle à quantification propre à un fork de llama.cpp (les Bonsai) ne se mesure qu'avec le moteur de ce fork ;
+- l'occupation de la carte graphique n'est relevée qu'une fois avant la mesure, avec `nvidia-smi` s'il est présent : c'est un
+  indice, pas une garantie ;
+- ce sont des vitesses mesurées sur ta machine, avec ton moteur : elles ne valent pas pour une autre configuration.
 
 Mises à jour : l'empreinte SHA-256 vérifie que le téléchargement est intact, pas
 d'où il vient. La provenance repose sur le compte GitHub de l'auteur, sur les
