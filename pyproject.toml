@@ -1,0 +1,9 @@
+[project]
+name = "aria-etabli"
+version = "0.1.0"
+description = "Ouvre un modèle de langage local, change un réglage, et mesure ce que ça change."
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

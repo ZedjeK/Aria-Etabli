@@ -1,20 +1,11 @@
-<!-- MODELE:debut -->
-> **Ce dépôt est le modèle des applis Aria.** Il ne se lance pas tel quel.
-> Crée ton appli avec « Use this template », clone-la, puis lance `.\init.ps1`
-> dans le dossier du clone : le script te demande la stack, remplit le nom et se
-> supprime. Ce que chaque stack fournit déjà est dans
-> [stacks/LISEZ-MOI.md](stacks/LISEZ-MOI.md). Ce qui suit est le squelette du
-> README de la future appli.
-
-<!-- MODELE:fin -->
 <p align="center">
-  <img src="docs/logo.png" width="160" alt="Logo d'Aria {{NOM}} : un A néon glitché avec {{ELEMENT_ORANGE}} orange">
+  <img src="docs/logo.png" width="160" alt="Logo d'Aria Etabli : un A néon glitché avec une loupe, posée entre les jambages du A orange">
 </p>
 
-<h1 align="center">Aria {{NOM}}</h1>
+<h1 align="center">Aria Etabli</h1>
 
 <p align="center">
-  {{PROMESSE}}
+  Ouvre un modèle de langage local, change un réglage, et mesure ce que ça change.
 </p>
 
 ## Ce qu'il fait
@@ -27,26 +18,12 @@ Windows 10 ou 11, 64 bits. Droits, ports et matériel nécessaires.
 
 ## Installation
 
-1. Télécharge `Aria-{{NOM}}-<version>.zip` depuis la page des versions.
+1. Télécharge `Aria-Etabli-<version>.zip` depuis la page des versions.
 2. Décompresse d'abord le zip en entier : clic droit, « Extraire tout ».
-<!-- PORTABLE:debut -->
    Choisis un dossier stable (pas Téléchargements).
-<!-- PORTABLE:fin -->
    Ne lance pas l'exe depuis l'aperçu du zip dans l'Explorateur : Windows n'en
    extrait que l'exe, sans les fichiers livrés à côté de lui.
-3. Lance `Aria-{{NOM}}.exe`.
-<!-- INSTALLATION:debut -->
-4. L'appli propose « Installer » ou « Lancer sans installer ».
-   - **Installer** range l'exe et ses fichiers dans
-     `%USERPROFILE%\.Aria-{{NOM}}\programme`, garde la version précédente, puis
-     relance l'appli depuis là. La case « Créer un raccourci sur le Bureau »,
-     décochée d'office, ajoute un raccourci sur ton Bureau seulement.
-   - **Lancer sans installer** utilise l'exe là où il est.
-
-   La case « Ne plus me proposer » coupe la question ; tu peux la réactiver dans
-   les paramètres. `Aria-{{NOM}}.exe --portable` lance l'appli sans rien
-   proposer.
-<!-- INSTALLATION:fin -->
+3. Lance `Aria-Etabli.exe`.
 
 L'exe n'est pas signé : Windows peut afficher « Windows a protégé votre
 ordinateur ». Clique sur « Informations complémentaires », puis sur « Exécuter
@@ -62,23 +39,15 @@ Section optionnelle : supprime-la si elle reste vide.
 
 ## Où sont tes données
 
-Tout est dans `%USERPROFILE%\.Aria-{{NOM}}` :
+Tout est dans `%USERPROFILE%\.Aria-Etabli` :
 
 - `reglages.json` : tes réglages ;
 - `journal.json` : les 500 dernières opérations ;
 - `sauvegardes\` : une copie datée avant chaque modification, et la version précédente de l'appli ;
 - `secrets\` : ce que l'appli garde de secret, chiffré pour ton compte Windows (supprime la ligne si elle n'en garde pas) ;
 - `cache\` : fichiers temporaires de l'interface.
-<!-- INSTALLATION:debut -->
-- `programme\` : l'appli installée.
-<!-- INSTALLATION:fin -->
 
 Supprimer ce dossier efface tes réglages et tes données : l'appli repart à neuf.
-<!-- INSTALLATION:debut -->
-Si tu as installé l'appli, il contient aussi `programme\` : le supprimer la
-désinstalle. Quitte-la avant ; le raccourci du Bureau, s'il existe, se supprime
-à la main.
-<!-- INSTALLATION:fin -->
 
 ## Mises à jour
 

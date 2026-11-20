@@ -15,4 +15,10 @@
 *.woff2 binary
 *.zip   binary
 
-# <<STACK:gitattributes>>
+# Python : sources en LF
+*.py   text eol=lf
+*.toml text eol=lf
+*.html text eol=lf
+*.css  text eol=lf
+*.js   text eol=lf
+*.svg  text eol=lf
