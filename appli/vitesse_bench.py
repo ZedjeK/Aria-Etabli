@@ -138,12 +138,7 @@ def mesurer(moteur: Moteur, modele, options: OptionsBench | None = None) -> Resu
     try:
         enregistrements = _lire_json(_lancer(commande, options.delai_max))
     except ErreurMesure as erreur:
-        inconnus = sorted({t.type_nom for t in fichier.tenseurs if t.type not in gguf.TYPES_TENSEURS})
-        if inconnus:
-            raise ErreurMesure(f"{str(erreur).rstrip('.')}. Indice : ce modèle contient des tenseurs de type {', '.join(inconnus)}, que le "
-                               "lecteur d'Etabli ne connaît pas ; le moteur essayé est peut-être trop ancien, ou n'est pas "
-                               "le fork de llama.cpp qui gère ce format.") from None
-        raise
+        raise mesures.avec_indice_types_inconnus(erreur, fichier) from None
 
     premier = enregistrements[0]
     configuration = Configuration(

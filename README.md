@@ -65,11 +65,30 @@ python -m appli mesurer bench C:\modeles\mon-modele.gguf --moteur C:\llama.cpp -
 les échantillons. La commande y ajoute la **configuration complète** : le modèle (architecture, quantification, types de
 tenseurs), le moteur (build, commit, backends), le matériel et tous les réglages que le moteur déclare. Deux mesures ne
 se comparent que si cette configuration est la même, à la variable qu'on fait varier près : la fonction
-`verifier_comparables` de `appli/mesures.py` fait cette vérification, mais la commande `mesurer` ne compare rien
-elle-même. `python -m appli mesurer --aide` donne toutes les options.
+`verifier_comparables` de `appli/mesures.py` fait cette vérification. `mesurer experts` l'applique avant d'afficher son
+tableau ; `mesurer bench` ne mesure qu'un modèle et ne compare rien. `python -m appli mesurer --aide` donne toutes les
+options.
 
 Rien n'est enregistré par la commande : elle affiche son résultat, et `--sortie fichier.json` l'écrit aussi dans un
 fichier, sans jamais écraser un fichier existant.
+
+### Mesurer la vitesse selon le nombre d'experts actifs
+
+Pour un modèle MoE, `llama-bench` ne sait pas régler le nombre d'experts actifs. La sous-commande `experts` passe par
+`llama-server` : elle lance un serveur par valeur, avec `--override-kv <architecture>.expert_used_count=int:N` (la clé est
+lue dans le fichier, le modèle n'est jamais écrit), mesure, puis l'arrête.
+
+```powershell
+python -m appli mesurer experts C:\modeles\mon-modele-moe.gguf --moteur C:\llama.cpp --experts 4,6,8,12,16
+```
+
+Le résultat est un tableau : pour chaque valeur, la vitesse de lecture du prompt (`pp`) et de génération (`tg`) avec leur
+écart-type, comparée à la valeur du fichier quand elle fait partie de la liste. Chaque mesure se fait après un échauffement
+(`--echauffement`, 1 par défaut) et se répète (`-r`, 5 par défaut). La commande vérifie avant d'afficher que seul le nombre
+d'experts actifs diffère d'une mesure à l'autre.
+
+Le serveur n'écoute que sur `127.0.0.1`, sur un port libre, avec une clé d'API tirée au hasard pour ce seul lancement et
+jamais écrite. Les requêtes ne passent par aucun proxy, et le serveur est arrêté dans tous les cas, même sur une erreur.
 
 ## Où sont tes données
 
@@ -119,7 +138,13 @@ Inspecteur GGUF :
 
 Mesure de vitesse :
 
-- `llama-bench` ne sait pas régler le nombre d'experts actifs d'un modèle MoE : cette commande ne le fait pas non plus ;
+- `llama-bench` ne sait pas régler le nombre d'experts actifs d'un modèle MoE : `mesurer bench` ne le fait pas, seule
+  `mesurer experts` (par `llama-server`) le fait ;
+- les vitesses de `bench` et de `experts` viennent de deux protocoles différents : elles ne se comparent pas entre elles ;
+- `mesurer experts` ne mesure que la vitesse, pas la qualité : moins d'experts que prévu à l'entraînement va plus vite
+  et répond moins bien, et plus d'experts n'est pas garanti meilleur ;
+- le prompt de `mesurer experts` est une phrase répétée jusqu'à la taille demandée : le routage des experts d'un MoE
+  dépend du texte, une vraie charge peut donner d'autres vitesses ;
 - le moteur est à fournir avec `--moteur` : Etabli ne lit pas les dossiers des autres applis et n'embarque pas encore de moteur ;
 - un modèle à quantification propre à un fork de llama.cpp (les Bonsai) ne se mesure qu'avec le moteur de ce fork ;
 - l'occupation de la carte graphique n'est relevée qu'une fois avant la mesure, avec `nvidia-smi` s'il est présent : c'est un

@@ -96,17 +96,39 @@ def decrire_modele(fichier: gguf.Fichier) -> dict[str, Any]:
             "parametres": resume["tenseurs"]["parametres"]}
 
 
-def occupation_gpu() -> int | None:
-    """Utilisation de la carte graphique, en %, lue une seule fois. None si nvidia-smi est absent ou ne répond pas."""
+def _nvidia_smi(champ: str) -> str | None:
+    """Première ligne d'un champ de nvidia-smi (« utilization.gpu », « name »...). None s'il est absent ou ne répond pas."""
     outil = shutil.which("nvidia-smi")
     if not outil:
         return None
     try:
-        sortie = subprocess.run([outil, "--query-gpu=utilization.gpu", "--format=csv,noheader,nounits"],
+        sortie = subprocess.run([outil, f"--query-gpu={champ}", "--format=csv,noheader,nounits"],
                                 capture_output=True, text=True, timeout=10, check=False).stdout
-        return int(sortie.strip().splitlines()[0])
-    except (OSError, subprocess.SubprocessError, ValueError, IndexError):
+        return sortie.strip().splitlines()[0].strip() or None
+    except (OSError, subprocess.SubprocessError, IndexError):
         return None
+
+
+def occupation_gpu() -> int | None:
+    """Utilisation de la carte graphique, en %, lue une seule fois. None si nvidia-smi est absent ou ne répond pas."""
+    try:
+        return int(_nvidia_smi("utilization.gpu") or "")
+    except ValueError:
+        return None
+
+
+def nom_gpu() -> str | None:
+    return _nvidia_smi("name")
+
+
+def avec_indice_types_inconnus(erreur: ErreurMesure, fichier: gguf.Fichier) -> ErreurMesure:
+    """Ajoute une piste à l'erreur d'un moteur quand le modèle a des types de tenseurs que le lecteur d'Etabli ne connaît pas."""
+    inconnus = sorted({t.type_nom for t in fichier.tenseurs if t.type not in gguf.TYPES_TENSEURS})
+    if not inconnus:
+        return erreur
+    return ErreurMesure(f"{str(erreur).rstrip('.')}. Indice : ce modèle contient des tenseurs de type {', '.join(inconnus)}, "
+                        "que le lecteur d'Etabli ne connaît pas ; le moteur essayé est peut-être trop ancien, ou n'est pas "
+                        "le fork de llama.cpp qui gère ce format.")
 
 
 def avertissement_gpu(occupation: int | None, utilise_la_carte: bool) -> list[str]:
