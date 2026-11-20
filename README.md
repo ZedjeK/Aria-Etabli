@@ -35,7 +35,22 @@ Le premier lancement, étape par étape.
 
 ## Au quotidien
 
-Section optionnelle : supprime-la si elle reste vide.
+### Inspecter un fichier GGUF
+
+Depuis le dossier du dépôt, avec les dépendances de `requirements.txt` installées :
+
+```powershell
+python -m appli inspecter C:\modeles\mon-modele.gguf
+python -m appli inspecter C:\modeles\mon-modele.gguf --tenseurs --json
+```
+
+La commande montre l'architecture, le nombre de blocs, les experts (totaux, actifs, partagés), le contexte, le tokenizer,
+le template de chat, la quantification, les tenseurs par type et les blocs regroupés par ensemble de tenseurs. Chaque
+valeur est donnée avec le nom complet de la clé d'où elle vient : le préfixe d'une architecture est lu dans le fichier,
+jamais deviné. `--tenseurs` ajoute la liste de tous les tenseurs, `--json` change la sortie en JSON.
+
+Le fichier n'est ouvert qu'en lecture et la commande n'écrit rien. Lancée depuis l'exe, elle laisse seulement celui-ci
+créer son dossier d'extraction `cache\` dans ton dossier de données, comme à chaque lancement.
 
 ## Où sont tes données
 
@@ -74,7 +89,14 @@ Pour signaler une faille : voir [SECURITY.md](SECURITY.md).
 
 ## Limites à connaître
 
-Ce que l'appli ne fait pas.
+Inspecteur GGUF :
+
+- il lit l'en-tête (métadonnées et description des tenseurs), jamais les poids ;
+- il ne gère pas la version 1 du format ni les fichiers gros-boutistes (big-endian) ;
+- un type de tenseur qu'il ne connaît pas (une quantification propre à un fork de llama.cpp, par exemple) s'affiche
+  `inconnu(N)`, et sa taille, déduite des décalages, est marquée d'un tilde (`~`) : elle est exacte à l'alignement près ;
+- l'exe n'a pas de console : lance la commande depuis les sources, ou depuis l'exe en redirigeant la sortie vers un
+  fichier (`Aria-Etabli.exe inspecter modele.gguf > resume.txt`).
 
 Mises à jour : l'empreinte SHA-256 vérifie que le téléchargement est intact, pas
 d'où il vient. La provenance repose sur le compte GitHub de l'auteur, sur les

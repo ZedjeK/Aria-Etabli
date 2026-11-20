@@ -8,3 +8,6 @@ sont dans `docs/releases/`.
 ### Ajouté
 
 - Première version d'Aria Etabli.
+- Inspecteur GGUF en ligne de commande (`python -m appli inspecter fichier.gguf`) : architecture, blocs, experts totaux
+  et actifs, contexte, tokenizer, template de chat, quantification, tenseurs. Lecture seule, sans dépendance ; ouvre
+  aussi les fichiers aux quantifications inconnues du paquet `gguf`, comme les Bonsai.

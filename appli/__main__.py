@@ -7,7 +7,7 @@ import webbrowser
 
 import uvicorn
 
-from appli import donnees, identite, instance, mises_a_jour, securite, serveur
+from appli import donnees, identite, inspecteur, instance, mises_a_jour, securite, serveur
 
 
 def _port_libre() -> int:
@@ -24,6 +24,9 @@ def _sortie_vers_journal() -> None:
 
 
 def main() -> int:
+    # « inspecter » lit un fichier et s'arrête : avant le dossier de données, l'instance unique et le serveur
+    if len(sys.argv) > 1 and sys.argv[1] == "inspecter":
+        return inspecteur.main(sys.argv[2:])
     try:
         donnees.assurer()
     except OSError as erreur:
