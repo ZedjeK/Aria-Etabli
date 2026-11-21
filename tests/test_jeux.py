@@ -66,7 +66,8 @@ def test_le_telechargement_range_des_fichiers_verifies_et_le_note_au_journal(tmp
     assert jeux.etat(JEU_ESSAI, tmp_path) == {"test.jsonl": "présent", "train.jsonl": "présent"}
     assert len(messages) == 2 and "test.jsonl" in " ".join(messages) and "train.jsonl" in " ".join(messages)
     derniere = donnees.lire_journal(tmp_path)[-1]
-    assert derniere["type"] == "jeux" and "api.github.com" in derniere["bilan"] and "essai" in derniere["bilan"]
+    assert derniere["type"] == "jeux"
+    assert derniere["bilan"] == "Jeu essai téléchargé depuis api.github.com : train.jsonl, test.jsonl."
 
 
 def test_un_jeu_deja_la_n_est_pas_retelecharge(tmp_path):
@@ -222,7 +223,8 @@ def test_la_liste_ne_se_connecte_pas_et_ne_cree_rien(tmp_path, commande, capsys)
 def test_telecharger_sans_accord_montre_le_plan_et_ne_fait_rien(tmp_path, commande, capsys):
     assert jeux.main(["telecharger", "essai"]) == 0
     sortie = capsys.readouterr().out
-    assert "Voici ce qui serait téléchargé" in sortie and "SHA-256" in sortie and "api.github.com" in sortie
+    assert "Voici ce qui serait téléchargé" in sortie and "SHA-256" in sortie
+    assert re.search(r"^  source : api\.github\.com \(dépôt https://exemple\.test/jeu, commit figé\), en HTTPS$", sortie, re.M)
     assert str(tmp_path / "jeux" / "essai") in sortie and "Rien n'a été fait" in sortie
     assert commande.appels == [] and list(tmp_path.iterdir()) == []  # le dossier de données n'est même pas créé
 
