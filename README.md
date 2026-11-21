@@ -52,6 +52,22 @@ jamais deviné. `--tenseurs` ajoute la liste de tous les tenseurs, `--json` chan
 Le fichier n'est ouvert qu'en lecture et la commande n'écrit rien. Lancée depuis l'exe, elle laisse seulement celui-ci
 créer son dossier d'extraction `cache\` dans ton dossier de données, comme à chaque lancement.
 
+### Télécharger un jeu de test
+
+Les mesures de qualité ont besoin d'un jeu de questions. Le seul connu pour l'instant est GSM8K (problèmes de
+mathématiques de primaire, 1 319 questions de test), du dépôt `openai/grade-school-math` (MIT, © 2021 OpenAI).
+
+```powershell
+python -m appli jeux                              # ce qui est connu et ce qui est déjà là, sans connexion
+python -m appli jeux telecharger gsm8k            # montre ce qui serait téléchargé, sans rien faire
+python -m appli jeux telecharger gsm8k --accord   # le télécharge, une seule fois (environ 4,7 Mio)
+```
+
+Rien ne se télécharge sans `--accord`. Le téléchargement n'utilise que `api.github.com`, en HTTPS, et ne suit aucune
+redirection vers un autre hôte. Les fichiers viennent d'un commit précis du dépôt d'origine et sont vérifiés par leur
+taille et leur SHA-256 avant d'être rangés dans `%USERPROFILE%\.Aria-Etabli\jeux\gsm8k` : un fichier qui ne correspond
+pas n'est jamais gardé, et un fichier déjà là qui a changé est signalé comme corrompu.
+
 ### Mesurer la vitesse d'un modèle
 
 Il faut un moteur llama.cpp : le dossier qui contient `llama-bench` (Etabli n'en embarque pas encore).
@@ -98,6 +114,7 @@ Tout est dans `%USERPROFILE%\.Aria-Etabli` :
 - `journal.json` : les 500 dernières opérations ;
 - `sauvegardes\` : une copie datée avant chaque modification, et la version précédente de l'appli ;
 - `secrets\` : ce que l'appli garde de secret, chiffré pour ton compte Windows (supprime la ligne si elle n'en garde pas) ;
+- `jeux\` : les jeux de test téléchargés avec ton accord, créé au premier téléchargement ;
 - `cache\` : fichiers temporaires de l'interface.
 
 Supprimer ce dossier efface tes réglages et tes données : l'appli repart à neuf.
@@ -119,7 +136,10 @@ de `sauvegardes\versions\<version>\` à la place de ceux de l'appli.
 ## Sécurité
 
 - **Droits** : l'appli se lance sans droits administrateur.
-- **Connexions sortantes** : la liste complète, destination par destination.
+- **Connexions sortantes** : `api.github.com` pour chercher une nouvelle version et, seulement avec `--accord`, pour
+  télécharger un jeu de test ; `github.com` et son hôte de téléchargement pour le zip d'une mise à jour, après ton clic ;
+  `127.0.0.1` pour parler au `llama-server` que `mesurer experts` lance, sans rien faire sortir de ta machine. Aucune
+  autre, aucune télémétrie.
 - **Secrets** : ce que l'appli garde, où, comment c'est protégé, et contre quoi
   cette protection ne joue pas.
 
