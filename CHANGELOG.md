@@ -17,3 +17,7 @@ sont dans `docs/releases/`.
 - Mesure de vitesse selon le nombre d'experts actifs d'un modèle MoE (`python -m appli mesurer experts modele.gguf
   --moteur dossier --experts 4,6,8`) : un `llama-server` par valeur, réglé par `--override-kv` sans écrire le modèle,
   sur `127.0.0.1` avec une clé d'API aléatoire, toujours arrêté ensuite. Seule la vitesse est mesurée, pas la qualité.
+- Jeux de test (`python -m appli jeux`) : GSM8K se télécharge depuis `api.github.com` seulement avec `--accord`, sans suivre
+  de redirection vers un autre hôte, avec vérification de la taille et du SHA-256 sur un commit précis. Le protocole de
+  qualité GSM8K de `lm-evaluation-harness` (5 exemples, complétion brute, filtres `strict-match` et `flexible-extract`) est
+  reproduit sans ses dépendances, avec l'intervalle de confiance de Wilson ; aucune commande ne le lance encore.
