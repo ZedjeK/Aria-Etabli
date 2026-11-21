@@ -7,7 +7,7 @@ import webbrowser
 
 import uvicorn
 
-from appli import donnees, identite, inspecteur, instance, mesurer, mises_a_jour, securite, serveur
+from appli import donnees, identite, inspecteur, instance, jeux, mesurer, mises_a_jour, securite, serveur
 
 
 def _port_libre() -> int:
@@ -24,11 +24,13 @@ def _sortie_vers_journal() -> None:
 
 
 def main() -> int:
-    # « inspecter » et « mesurer » font leur travail et s'arrêtent : avant le dossier de données, l'instance unique et le serveur
+    # « inspecter », « mesurer » et « jeux » font leur travail et s'arrêtent : avant le dossier de données, l'instance unique et le serveur
     if len(sys.argv) > 1 and sys.argv[1] == "inspecter":
         return inspecteur.main(sys.argv[2:])
     if len(sys.argv) > 1 and sys.argv[1] == "mesurer":
         return mesurer.main(sys.argv[2:])
+    if len(sys.argv) > 1 and sys.argv[1] == "jeux":
+        return jeux.main(sys.argv[2:])
     try:
         donnees.assurer()
     except OSError as erreur:
